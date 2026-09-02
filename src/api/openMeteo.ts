@@ -1,4 +1,6 @@
+import type { WeatherSnapshot } from '../types/location'
 import type { ForecastData, GeoLocation } from '../types/weather'
+import { formatClockTime } from '../logic/timeOfDay'
 
 const GEOCODING_URL = 'https://geocoding-api.open-meteo.com/v1/search'
 const FORECAST_URL = 'https://api.open-meteo.com/v1/forecast'
@@ -91,5 +93,59 @@ export async function fetchForecast(
     },
     today: daily(0),
     tomorrow: daily(1),
+  }
+}
+
+interface SnapshotApiResponse {
+  current: {
+    temperature_2m: number
+    relative_humidity_2m: number
+    precipitation: number
+    weather_code: number
+    wind_speed_10m: number
+    wind_direction_10m: number
+    pressure_msl: number
+  }
+  daily: {
+    temperature_2m_max: number[]
+    temperature_2m_min: number[]
+    sunrise: string[]
+    sunset: string[]
+    precipitation_sum: (number | null)[]
+  }
+}
+
+/** Location Mode 用。地点特定につながる timezone は返さない。 */
+export async function fetchWeatherSnapshot(
+  location: Pick<GeoLocation, 'latitude' | 'longitude'>,
+): Promise<WeatherSnapshot> {
+  const params = new URLSearchParams({
+    latitude: String(location.latitude),
+    longitude: String(location.longitude),
+    current:
+      'temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m,wind_direction_10m,pressure_msl',
+    daily: 'temperature_2m_max,temperature_2m_min,sunrise,sunset,precipitation_sum',
+    wind_speed_unit: 'ms',
+    timezone: 'auto',
+    forecast_days: '1',
+  })
+  const res = await fetch(`${FORECAST_URL}?${params.toString()}`)
+  if (!res.ok) {
+    throw new Error('天気の取得に失敗しました')
+  }
+  const data: SnapshotApiResponse = await res.json()
+
+  return {
+    temperature: data.current.temperature_2m,
+    tempMax: data.daily.temperature_2m_max[0],
+    tempMin: data.daily.temperature_2m_min[0],
+    weatherCode: data.current.weather_code,
+    humidity: data.current.relative_humidity_2m,
+    precipitationMm: data.daily.precipitation_sum[0] ?? data.current.precipitation ?? 0,
+    windSpeedMs: data.current.wind_speed_10m,
+    windDirectionDeg: data.current.wind_direction_10m,
+    pressure: data.current.pressure_msl,
+    sunrise: formatClockTime(data.daily.sunrise[0]),
+    sunset: formatClockTime(data.daily.sunset[0]),
   }
 }
