@@ -33,6 +33,7 @@
 - スタイルは素の CSS（コンポーネントライブラリなし）
 - バックエンド / DB / ログインなし。ブラウザから [Open-Meteo](https://open-meteo.com/) を直接呼ぶ（APIキー不要）
 - 場所モードの地図は [Leaflet](https://leafletjs.com/) + [OpenStreetMap](https://www.openstreetmap.org/copyright) タイル
+- 日本語の地名検索は Open-Meteo geocoding がほぼヒットしないため、よく使う都市はアプリ内のリストから先に照合する
 - スマホファースト（幅 390px 前後を第一対象）
 
 ## 開発

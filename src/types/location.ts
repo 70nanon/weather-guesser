@@ -6,6 +6,7 @@ export interface TargetCity {
   country: string
   latitude: number
   longitude: number
+  aliases?: string[]
 }
 
 export interface LatLng {

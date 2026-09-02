@@ -1,5 +1,6 @@
 import type { WeatherSnapshot } from '../types/location'
 import type { ForecastData, GeoLocation } from '../types/weather'
+import { searchLocalCities } from '../data/searchCities'
 import { formatClockTime } from '../logic/timeOfDay'
 
 const GEOCODING_URL = 'https://geocoding-api.open-meteo.com/v1/search'
@@ -14,10 +15,13 @@ interface GeoApiResult {
   admin1?: string
 }
 
-// 地名検索。APIキー不要。
+// 地名検索。日本語は Open-Meteo geocoding がほぼヒットしないのでローカル都市表を先に見る。
 export async function searchLocations(query: string): Promise<GeoLocation[]> {
   const trimmed = query.trim()
   if (trimmed.length === 0) return []
+
+  const local = searchLocalCities(trimmed)
+  if (local.length > 0) return local
 
   const params = new URLSearchParams({
     name: trimmed,
