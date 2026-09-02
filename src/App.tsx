@@ -1,92 +1,34 @@
 import { useState } from 'react'
 import './App.css'
-import type {
-  AbsurdityResult,
-  ForecastData,
-  GeoLocation,
-  Guess,
-  ScoreBreakdown,
-} from './types/weather'
-import { fetchForecast } from './api/openMeteo'
-import { calculateScore } from './logic/calculateScore'
-import { calculateAbsurdity } from './logic/calculateAbsurdity'
-import { pickComment } from './logic/comments'
-import { LocationSearch } from './components/LocationSearch'
-import { CurrentWeather } from './components/CurrentWeather'
-import { ForecastForm } from './components/ForecastForm'
-import { ResultCard } from './components/ResultCard'
+import { ModeTabs, type GameMode } from './components/ModeTabs'
+import { ForecastMode } from './modes/ForecastMode'
+import { LocationMode } from './modes/LocationMode'
 
-interface Result {
-  guess: Guess
-  score: ScoreBreakdown
-  absurdity: AbsurdityResult
-  comment: string
+const COPY: Record<GameMode, { title: string; subtitle: string }> = {
+  forecast: {
+    title: '天気ゲッサー',
+    subtitle: '今日の天気をヒントに、明日を当てろ。',
+  },
+  location: {
+    title: 'この天気はどこ？',
+    subtitle: '天気だけを手がかりに、世界のどこかを当てろ。',
+  },
 }
 
 function App() {
-  const [location, setLocation] = useState<GeoLocation | null>(null)
-  const [forecast, setForecast] = useState<ForecastData | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [result, setResult] = useState<Result | null>(null)
-
-  async function handleSelectLocation(loc: GeoLocation) {
-    setLocation(loc)
-    setForecast(null)
-    setResult(null)
-    setError(null)
-    setLoading(true)
-    try {
-      const data = await fetchForecast(loc)
-      setForecast(data)
-    } catch {
-      setError('天気予報の取得に失敗しました。もう一度お試しください。')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  function handleGuess(guess: Guess) {
-    if (!forecast) return
-    const score = calculateScore(guess, forecast.tomorrow)
-    const absurdity = calculateAbsurdity(guess, forecast.today)
-    const comment = pickComment(absurdity.score)
-    setResult({ guess, score, absurdity, comment })
-  }
-
-  function handleReset() {
-    setResult(null)
-  }
+  const [mode, setMode] = useState<GameMode>('forecast')
+  const copy = COPY[mode]
 
   return (
-    <div className="app">
+    <div className={`app${mode === 'location' ? ' app--location' : ''}`}>
       <header className="app__header">
-        <h1 className="app__title">天気ゲッサー</h1>
-        <p className="app__subtitle">今日の天気をヒントに、明日を当てろ。</p>
+        <h1 className="app__title">{copy.title}</h1>
+        <p className="app__subtitle">{copy.subtitle}</p>
+        <ModeTabs mode={mode} onChange={setMode} />
       </header>
 
       <main className="app__main">
-        <LocationSearch onSelect={handleSelectLocation} selected={location} />
-
-        {loading && <p className="loading">天気を取得中…</p>}
-        {error && <p className="error error--block">{error}</p>}
-
-        {forecast && location && (
-          <CurrentWeather location={location} forecast={forecast} />
-        )}
-
-        {forecast && !result && <ForecastForm onSubmit={handleGuess} />}
-
-        {forecast && result && (
-          <ResultCard
-            guess={result.guess}
-            tomorrow={forecast.tomorrow}
-            score={result.score}
-            absurdity={result.absurdity}
-            comment={result.comment}
-            onReset={handleReset}
-          />
-        )}
+        {mode === 'forecast' ? <ForecastMode /> : <LocationMode />}
       </main>
 
       <footer className="app__footer">
@@ -94,6 +36,19 @@ function App() {
         <a href="https://open-meteo.com/" target="_blank" rel="noreferrer">
           Open-Meteo
         </a>
+        {mode === 'location' && (
+          <>
+            {' · '}
+            地図:{' '}
+            <a
+              href="https://www.openstreetmap.org/copyright"
+              target="_blank"
+              rel="noreferrer"
+            >
+              OpenStreetMap
+            </a>
+          </>
+        )}
       </footer>
     </div>
   )
