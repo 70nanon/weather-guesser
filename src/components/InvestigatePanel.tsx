@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { GeoLocation } from '../types/weather'
 import { searchLocations } from '../api/openMeteo'
+import { formatPlaceLabel } from '../logic/placeLabel'
 
 export const MAX_INVESTIGATIONS = 3
 
@@ -108,8 +109,10 @@ export function InvestigatePanel({
                 onClick={() => void handleSelect(loc)}
                 disabled={locked || investigatingId != null}
               >
-                <span className="result__name">{loc.name}</span>
-                <span className="result__country">
+                <span className="result__name">
+                  {formatPlaceLabel(loc.name, loc.country)}
+                </span>
+                <span className="result__action">
                   {investigatingId === loc.id ? '取得中…' : '調査する'}
                 </span>
               </button>

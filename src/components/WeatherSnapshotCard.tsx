@@ -1,4 +1,5 @@
 import type { WeatherSnapshot } from '../types/location'
+import { formatPlaceLabel } from '../logic/placeLabel'
 import { categoryEmoji, categoryLabel, codeToCategory } from '../logic/weatherCode'
 import { formatWind } from '../logic/wind'
 
@@ -20,12 +21,7 @@ export function WeatherSnapshotCard({ title, snapshot, place }: Props) {
     <section className="card">
       <h2 className="card__title">{title}</h2>
       {place && (
-        <p className="place">
-          {place.name}
-          {place.country && (
-            <span className="place__country"> / {place.country}</span>
-          )}
-        </p>
+        <p className="place">{formatPlaceLabel(place.name, place.country)}</p>
       )}
 
       <div className="current">
