@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { GeoLocation } from '../types/weather'
 import { searchLocations } from '../api/openMeteo'
+import { formatPlaceLabel } from '../logic/placeLabel'
 
 interface Props {
   onSelect: (location: GeoLocation) => void
@@ -66,8 +67,9 @@ export function LocationSearch({ onSelect, selected }: Props) {
                   className={`result${isSelected ? ' result--selected' : ''}`}
                   onClick={() => onSelect(loc)}
                 >
-                  <span className="result__name">{loc.name}</span>
-                  <span className="result__country">{loc.country}</span>
+                  <span className="result__name">
+                    {formatPlaceLabel(loc.name, loc.country)}
+                  </span>
                 </button>
               </li>
             )

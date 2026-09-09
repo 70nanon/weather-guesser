@@ -146,11 +146,14 @@
 
 .result__name {
   font-weight: 600;
+  min-width: 0;
 }
 
-.result__country {
+.result__country,
+.result__action {
   color: var(--text-muted);
   font-size: 13px;
+  flex-shrink: 0;
 }
 
 /* --- Buttons --- */
