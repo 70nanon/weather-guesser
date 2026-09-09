@@ -12,13 +12,20 @@ interface Props {
   title: string
   snapshot: WeatherSnapshot
   place?: PlaceLabel
+  framed?: boolean
 }
 
-export function WeatherSnapshotCard({ title, snapshot, place }: Props) {
+export function WeatherSnapshotCard({
+  title,
+  snapshot,
+  place,
+  framed = true,
+}: Props) {
   const category = codeToCategory(snapshot.weatherCode)
+  const Tag = framed ? 'section' : 'div'
 
   return (
-    <section className="card">
+    <Tag className={framed ? 'card' : 'snapshot-plain'}>
       <h2 className="card__title">{title}</h2>
       {place && (
         <p className="place">{formatPlaceLabel(place.name, place.country)}</p>
@@ -74,6 +81,6 @@ export function WeatherSnapshotCard({ title, snapshot, place }: Props) {
           </div>
         )}
       </dl>
-    </section>
+    </Tag>
   )
 }
