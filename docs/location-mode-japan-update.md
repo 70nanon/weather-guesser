@@ -88,7 +88,7 @@ UI 案（実装時にどちらか）:
 | LM-2 | 問題と調査結果を折りたたみまたはタブで切り替える | なし | 完了（[PR #5](https://github.com/70nanon/weather-guesser/pull/5)） |
 | LM-3 | 正解リストと検索カタログを分離し、世界リストを残す | なし | 完了（[PR #6](https://github.com/70nanon/weather-guesser/pull/6)） |
 | LM-4 | 日本国内リストを追加する | LM-3 | 完了（[PR #7](https://github.com/70nanon/weather-guesser/pull/7)） |
-| LM-8 | 日本モード / 世界モードの切替を入れる | LM-3, LM-4 | 完了 |
+| LM-8 | 日本モード / 世界モードの切替を入れる | LM-3, LM-4 | 完了（[PR #8](https://github.com/70nanon/weather-guesser/pull/8)） |
 | LM-5 | 地図の初期表示をモードに合わせる | LM-8 | 未着手 |
 | LM-6 | 調査地点を地図上に出す | なし | 未着手 |
 | LM-7 | 距離スコアをモード別に分ける | LM-8 | 未着手 |
@@ -245,7 +245,7 @@ Location の正解配列と、両モード共通の検索カタログを別に�
 
 ## LM-8 日本モード / 世界モードの切替を入れる
 
-状態: **完了**  
+状態: **完了**（[PR #8](https://github.com/70nanon/weather-guesser/pull/8)）  
 前提: **LM-3, LM-4**
 
 ### やりたいこと
@@ -409,7 +409,7 @@ Location Mode 内で日本 / 世界を選れるようにする。デフォルト
 
 | 項目 | 現在 | アップデート後 | チケット |
 | --- | --- | --- | --- |
-| 場所のモード | 世界のみ | 日本（標準）と世界（高難易度） | LM-8（完了） |
+| 場所のモード | 世界のみ | 日本（標準）と世界（高難易度） | LM-8（完了 / [PR #8](https://github.com/70nanon/weather-guesser/pull/8)） |
 | 調査候補 | 地点名 +「調査する」 | `地点名 / 国名` | LM-1（完了 / [PR #4](https://github.com/70nanon/weather-guesser/pull/4)） |
 | 問題と調査の比較 | 縦積み | タブまたは折りたたみ | LM-2（完了 / [PR #5](https://github.com/70nanon/weather-guesser/pull/5)） |
 | データ | 世界リスト兼検索 | 世界リスト + 日本リスト + 検索カタログ | LM-3（完了 / [PR #6](https://github.com/70nanon/weather-guesser/pull/6)）, LM-4（完了 / [PR #7](https://github.com/70nanon/weather-guesser/pull/7)） |
