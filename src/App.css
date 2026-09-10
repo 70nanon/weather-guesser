@@ -59,6 +59,44 @@
   color: #3a2500;
 }
 
+.region-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.region-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.region-tab {
+  min-height: 36px;
+  padding: 0 16px;
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.region-tab--on {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #3a2500;
+}
+
+.region-tab__note {
+  margin-left: 6px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  opacity: 0.8;
+}
+
 .compare-tabs {
   display: flex;
   gap: 6px;
@@ -458,6 +496,12 @@
 
 .hint--inline {
   margin: 0 0 12px;
+}
+
+.hint--region {
+  margin: 4px 0 0;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.85);
 }
 
 .investigate-count {

@@ -34,10 +34,13 @@ export interface Investigation {
   snapshot: WeatherSnapshot
 }
 
+export type LocationRegion = 'japan' | 'world'
+
 export interface LocationRoundResult {
   target: TargetCity
   guess: LatLng
   distanceKm: number
   score: number
   investigationsUsed: number
+  region: LocationRegion
 }

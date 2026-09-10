@@ -3,11 +3,13 @@ import type { GeoLocation } from '../types/weather'
 import type {
   Investigation,
   LatLng,
+  LocationRegion,
   LocationRoundResult,
   TargetCity,
   WeatherSnapshot,
 } from '../types/location'
-import { pickTargetCity, WORLD_CITIES } from '../data/targetCities'
+import { citiesForRegion } from '../data/locationRegion'
+import { pickTargetCity } from '../data/targetCities'
 import { fetchWeatherSnapshot } from '../api/openMeteo'
 import { haversineKm } from '../logic/haversine'
 import { locationScore } from '../logic/locationScore'
@@ -17,6 +19,7 @@ import {
   MAX_INVESTIGATIONS,
 } from '../components/InvestigatePanel'
 import { AnswerMap } from '../components/AnswerMap'
+import { LocationRegionTabs } from '../components/LocationRegionTabs'
 import { LocationResultCard } from '../components/LocationResultCard'
 
 interface Round {
@@ -24,7 +27,22 @@ interface Round {
   snapshot: WeatherSnapshot
 }
 
+const REGION_COPY: Record<
+  LocationRegion,
+  { prompt: string; mapHint: string }
+> = {
+  japan: {
+    prompt: '日本のどこかを当てろ。',
+    mapHint: '地図をタップして、日本のどこかだと思う場所にピンを置いてください。',
+  },
+  world: {
+    prompt: '世界のどこかを当てろ（高難易度）。',
+    mapHint: '世界地図をタップして「ここだ」と思う場所にピンを置いてください。',
+  },
+}
+
 export function LocationMode() {
+  const [region, setRegion] = useState<LocationRegion>('japan')
   const [roundId, setRoundId] = useState(0)
   const [round, setRound] = useState<Round | null>(null)
   const [loading, setLoading] = useState(true)
@@ -38,11 +56,12 @@ export function LocationMode() {
 
   useEffect(() => {
     let cancelled = false
+    const cities = citiesForRegion(region)
 
     async function load() {
       let avoided = lastTargetIdRef.current
       for (let attempt = 0; attempt < 3; attempt++) {
-        const target = pickTargetCity(WORLD_CITIES, avoided)
+        const target = pickTargetCity(cities, avoided)
         try {
           const snapshot = await fetchWeatherSnapshot(target)
           if (cancelled) return
@@ -65,7 +84,26 @@ export function LocationMode() {
     return () => {
       cancelled = true
     }
-  }, [roundId])
+  }, [roundId, region])
+
+  function startNewRound() {
+    setRound(null)
+    setInvestigations([])
+    setGuess(null)
+    setAnswerError(null)
+    setResult(null)
+    setCompareTab('problem')
+    setError(null)
+    setLoading(true)
+    setRoundId((n) => n + 1)
+  }
+
+  function handleRegionChange(next: LocationRegion) {
+    if (next === region) return
+    lastTargetIdRef.current = undefined
+    setRegion(next)
+    startNewRound()
+  }
 
   async function handleInvestigate(location: GeoLocation) {
     if (!round || result) return
@@ -93,31 +131,26 @@ export function LocationMode() {
       distanceKm,
       score: locationScore(distanceKm, investigationsUsed),
       investigationsUsed,
+      region,
     })
-  }
-
-  function handleNext() {
-    setRound(null)
-    setInvestigations([])
-    setGuess(null)
-    setAnswerError(null)
-    setResult(null)
-    setCompareTab('problem')
-    setError(null)
-    setLoading(true)
-    setRoundId((n) => n + 1)
   }
 
   const remaining = MAX_INVESTIGATIONS - investigations.length
   const answered = result != null
+  const copy = REGION_COPY[region]
 
   return (
     <>
+      <div className="region-header">
+        <LocationRegionTabs region={region} onChange={handleRegionChange} />
+        <p className="hint hint--region">{copy.prompt}</p>
+      </div>
+
       {loading && <p className="loading">秘密の地点の天気を取得中…</p>}
       {error && (
         <div className="error error--block">
           <p className="error-block__text">{error}</p>
-          <button className="btn btn--primary" type="button" onClick={handleNext}>
+          <button className="btn btn--primary" type="button" onClick={startNewRound}>
             再試行
           </button>
         </div>
@@ -143,9 +176,7 @@ export function LocationMode() {
       {round && (
         <section className="card">
           <h2 className="card__title">地図で回答</h2>
-          <p className="hint hint--inline">
-            世界地図をタップして「ここだ」と思う場所にピンを置いてください。
-          </p>
+          <p className="hint hint--inline">{copy.mapHint}</p>
           <AnswerMap
             key={roundId}
             guess={guess}
@@ -165,7 +196,7 @@ export function LocationMode() {
         </section>
       )}
 
-      {result && <LocationResultCard result={result} onNext={handleNext} />}
+      {result && <LocationResultCard result={result} onNext={startNewRound} />}
     </>
   )
 }

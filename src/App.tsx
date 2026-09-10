@@ -11,7 +11,7 @@ const COPY: Record<GameMode, { title: string; subtitle: string }> = {
   },
   location: {
     title: 'この天気はどこ？',
-    subtitle: '天気だけを手がかりに、世界のどこかを当てろ。',
+    subtitle: '天気だけを手がかりに、場所を当てろ。',
   },
 }
 
