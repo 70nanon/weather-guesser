@@ -1,7 +1,7 @@
 import type { TargetCity } from '../types/location'
 
-/** 初期版の正解候補。観測しやすい都市を気候帯・大陸ごとにばらけさせている。 */
-export const TARGET_CITIES: TargetCity[] = [
+/** 世界モード用の正解候補。日本リストで上書きしない。 */
+export const WORLD_CITIES: TargetCity[] = [
   { id: 1, name: '札幌', country: '日本', latitude: 43.06, longitude: 141.35 },
   { id: 2, name: '東京', country: '日本', latitude: 35.68, longitude: 139.76 },
   { id: 3, name: '那覇', country: '日本', latitude: 26.21, longitude: 127.68 },
@@ -51,7 +51,7 @@ export const TARGET_CITIES: TargetCity[] = [
 ]
 
 export function pickTargetCity(
-  cities: readonly TargetCity[] = TARGET_CITIES,
+  cities: readonly TargetCity[],
   excludeId?: number,
 ): TargetCity {
   const pool =
