@@ -7,7 +7,7 @@ import type {
   TargetCity,
   WeatherSnapshot,
 } from '../types/location'
-import { pickTargetCity } from '../data/targetCities'
+import { pickTargetCity, WORLD_CITIES } from '../data/targetCities'
 import { fetchWeatherSnapshot } from '../api/openMeteo'
 import { haversineKm } from '../logic/haversine'
 import { locationScore } from '../logic/locationScore'
@@ -42,7 +42,7 @@ export function LocationMode() {
     async function load() {
       let avoided = lastTargetIdRef.current
       for (let attempt = 0; attempt < 3; attempt++) {
-        const target = pickTargetCity(undefined, avoided)
+        const target = pickTargetCity(WORLD_CITIES, avoided)
         try {
           const snapshot = await fetchWeatherSnapshot(target)
           if (cancelled) return

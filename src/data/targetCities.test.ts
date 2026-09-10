@@ -1,20 +1,23 @@
 import { describe, expect, it } from 'vitest'
-import { TARGET_CITIES, pickTargetCity } from './targetCities'
+import { WORLD_CITIES, pickTargetCity } from './targetCities'
 
-describe('TARGET_CITIES', () => {
-  it('候補が十分ある', () => {
-    expect(TARGET_CITIES.length).toBeGreaterThanOrEqual(30)
+describe('WORLD_CITIES', () => {
+  it('世界規模の候補が残っている', () => {
+    expect(WORLD_CITIES.length).toBe(46)
+    expect(WORLD_CITIES.some((c) => c.name === 'ロンドン')).toBe(true)
+    expect(WORLD_CITIES.some((c) => c.name === 'ニューヨーク')).toBe(true)
+    expect(WORLD_CITIES.some((c) => c.name === '東京')).toBe(true)
   })
 
   it('idは一意', () => {
-    const ids = TARGET_CITIES.map((c) => c.id)
+    const ids = WORLD_CITIES.map((c) => c.id)
     expect(new Set(ids).size).toBe(ids.length)
   })
 })
 
 describe('pickTargetCity', () => {
-  it('excludeId以外から選ぶ', () => {
-    const only = TARGET_CITIES.slice(0, 3)
+  it('渡した配列から選ぶ', () => {
+    const only = WORLD_CITIES.slice(0, 3)
     const picked = pickTargetCity(only, only[0].id)
     expect(picked.id).not.toBe(only[0].id)
     expect(only.slice(1).some((c) => c.id === picked.id)).toBe(true)
