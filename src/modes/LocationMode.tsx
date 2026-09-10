@@ -11,7 +11,7 @@ import { pickTargetCity } from '../data/targetCities'
 import { fetchWeatherSnapshot } from '../api/openMeteo'
 import { haversineKm } from '../logic/haversine'
 import { locationScore } from '../logic/locationScore'
-import { WeatherSnapshotCard } from '../components/WeatherSnapshotCard'
+import { WeatherComparePanel, type CompareTab } from '../components/WeatherComparePanel'
 import {
   InvestigatePanel,
   MAX_INVESTIGATIONS,
@@ -33,6 +33,7 @@ export function LocationMode() {
   const [guess, setGuess] = useState<LatLng | null>(null)
   const [answerError, setAnswerError] = useState<string | null>(null)
   const [result, setResult] = useState<LocationRoundResult | null>(null)
+  const [compareTab, setCompareTab] = useState<CompareTab>('problem')
   const lastTargetIdRef = useRef<number | undefined>(undefined)
 
   useEffect(() => {
@@ -74,6 +75,7 @@ export function LocationMode() {
     }
     const snapshot = await fetchWeatherSnapshot(location)
     setInvestigations((prev) => [...prev, { location, snapshot }])
+    setCompareTab(investigations.length)
   }
 
   function handleAnswer() {
@@ -100,6 +102,7 @@ export function LocationMode() {
     setGuess(null)
     setAnswerError(null)
     setResult(null)
+    setCompareTab('problem')
     setError(null)
     setLoading(true)
     setRoundId((n) => n + 1)
@@ -121,7 +124,12 @@ export function LocationMode() {
       )}
 
       {round && (
-        <WeatherSnapshotCard title="現在の天気" snapshot={round.snapshot} />
+        <WeatherComparePanel
+          problem={round.snapshot}
+          investigations={investigations}
+          selected={compareTab}
+          onSelect={setCompareTab}
+        />
       )}
 
       {round && (
@@ -131,15 +139,6 @@ export function LocationMode() {
           onInvestigate={handleInvestigate}
         />
       )}
-
-      {investigations.map((item, index) => (
-        <WeatherSnapshotCard
-          key={`${item.location.id}-${index}`}
-          title={`調査${index + 1}`}
-          snapshot={item.snapshot}
-          place={{ name: item.location.name, country: item.location.country }}
-        />
-      ))}
 
       {round && (
         <section className="card">

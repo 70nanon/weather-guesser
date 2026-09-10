@@ -59,6 +59,35 @@
   color: #3a2500;
 }
 
+.compare-tabs {
+  display: flex;
+  gap: 6px;
+  margin: 0 0 10px;
+  overflow-x: auto;
+}
+
+.compare-tab {
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1.5px solid #d5dae2;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.compare-tab--on {
+  border-color: var(--accent-strong);
+  background: #fff4dd;
+}
+
+.snapshot-plain .card__title {
+  margin-top: 4px;
+}
+
 .app__main {
   display: flex;
   flex-direction: column;
