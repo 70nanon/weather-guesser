@@ -9,6 +9,7 @@ import type {
   WeatherSnapshot,
 } from '../types/location'
 import { citiesForRegion } from '../data/locationRegion'
+import { mapViewForRegion } from '../data/mapView'
 import { pickTargetCity } from '../data/targetCities'
 import { fetchWeatherSnapshot } from '../api/openMeteo'
 import { haversineKm } from '../logic/haversine'
@@ -178,7 +179,8 @@ export function LocationMode() {
           <h2 className="card__title">地図で回答</h2>
           <p className="hint hint--inline">{copy.mapHint}</p>
           <AnswerMap
-            key={roundId}
+            key={`${region}-${roundId}`}
+            view={mapViewForRegion(region)}
             guess={guess}
             target={answered ? round.target : null}
             disabled={answered}
