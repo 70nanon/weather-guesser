@@ -41,7 +41,7 @@ Location Mode は `src/modes/LocationMode.tsx`、Forecast Mode は `src/modes/Fo
 
 ### 回答・採点
 
-- `AnswerMap` は世界全体（`center=[20,10]`, `zoom=1`）。クリックで回答ピン（オレンジ）。
+- `AnswerMap` の初期表示はモード別。日本は列島が入る bounds、世界は現行どおり `center=[20,10]`, `zoom=1`。クリックで回答ピン（オレンジ）。
 - 回答後だけ正解ピン（青）と破線。調査ピンはない。
 - 距離は `haversineKm`、スコアは `locationScore`（最大 5000、`e^(-km/1500)`）。減衰 1500km は世界向け。調査回数ボーナスは 0。
 - 日本モード用の減衰を足しても、世界モードは現行の 1500km を残す。
@@ -89,7 +89,7 @@ UI 案（実装時にどちらか）:
 | LM-3 | 正解リストと検索カタログを分離し、世界リストを残す | なし | 完了（[PR #6](https://github.com/70nanon/weather-guesser/pull/6)） |
 | LM-4 | 日本国内リストを追加する | LM-3 | 完了（[PR #7](https://github.com/70nanon/weather-guesser/pull/7)） |
 | LM-8 | 日本モード / 世界モードの切替を入れる | LM-3, LM-4 | 完了（[PR #8](https://github.com/70nanon/weather-guesser/pull/8)） |
-| LM-5 | 地図の初期表示をモードに合わせる | LM-8 | 未着手 |
+| LM-5 | 地図の初期表示をモードに合わせる | LM-8 | 完了 |
 | LM-6 | 調査地点を地図上に出す | なし | 未着手 |
 | LM-7 | 距離スコアをモード別に分ける | LM-8 | 未着手 |
 
@@ -281,6 +281,7 @@ Location Mode 内で日本 / 世界を選れるようにする。デフォルト
 
 ## LM-5 地図の初期表示をモードに合わせる
 
+状態: **完了**  
 前提: **LM-8**
 
 ### やりたいこと
@@ -295,6 +296,8 @@ Location Mode 内で日本 / 世界を選れるようにする。デフォルト
 - 日本地図のロックは任意。ロックするなら小笠原・石垣が切れないようにする。世界モードではロックしない。
 - 回答後の、回答ピンと正解ピンへの `fitBounds` は両モードとも維持してよい。
 - `key` にモードを含め、切替時に地図を作り直す。
+
+実装: `mapViewForRegion` で初期表示を切り替える。日本は `[37.5, 137]` / zoom 5 と、北海道〜沖縄が入る bounds。世界は現行のまま。地図ロックはしない。`AnswerMap` の `key` に region を含める。
 
 ### 対象ファイル
 
@@ -413,7 +416,7 @@ Location Mode 内で日本 / 世界を選れるようにする。デフォルト
 | 調査候補 | 地点名 +「調査する」 | `地点名 / 国名` | LM-1（完了 / [PR #4](https://github.com/70nanon/weather-guesser/pull/4)） |
 | 問題と調査の比較 | 縦積み | タブまたは折りたたみ | LM-2（完了 / [PR #5](https://github.com/70nanon/weather-guesser/pull/5)） |
 | データ | 世界リスト兼検索 | 世界リスト + 日本リスト + 検索カタログ | LM-3（完了 / [PR #6](https://github.com/70nanon/weather-guesser/pull/6)）, LM-4（完了 / [PR #7](https://github.com/70nanon/weather-guesser/pull/7)） |
-| 地図の初期表示 | 常に世界 | モードに合わせる | LM-5 |
+| 地図の初期表示 | 常に世界 | モードに合わせる | LM-5（完了） |
 | 調査地点 | カードのみ | カード + 地図マーカー | LM-6 |
 | 採点 | 減衰 1500km のみ | 日本 / 世界で減衰を分ける | LM-7 |
 | 気象表示 | 現行セット | 同じ | — |

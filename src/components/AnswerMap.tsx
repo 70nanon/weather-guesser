@@ -8,6 +8,7 @@ import {
   useMapEvents,
 } from 'react-leaflet'
 import type { LatLng } from '../types/location'
+import type { MapView } from '../data/mapView'
 import 'leaflet/dist/leaflet.css'
 
 interface Props {
@@ -15,6 +16,7 @@ interface Props {
   target?: LatLng | null
   disabled: boolean
   onPick: (point: LatLng) => void
+  view: MapView
 }
 
 function ClickCatcher({
@@ -53,15 +55,17 @@ function FitGuessAndTarget({ guess, target }: { guess: LatLng; target: LatLng })
   return null
 }
 
-export function AnswerMap({ guess, target, disabled, onPick }: Props) {
+export function AnswerMap({ guess, target, disabled, onPick, view }: Props) {
   const showTarget = target != null
 
   return (
     <div className="answer-map-wrap">
       <MapContainer
         className="answer-map"
-        center={[20, 10]}
-        zoom={1}
+        center={[...view.center]}
+        zoom={view.zoom}
+        bounds={view.bounds ? [[...view.bounds[0]], [...view.bounds[1]]] : undefined}
+        boundsOptions={view.bounds ? { padding: [16, 16], maxZoom: 6 } : undefined}
         minZoom={1}
         maxZoom={10}
         scrollWheelZoom
