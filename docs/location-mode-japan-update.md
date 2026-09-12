@@ -43,8 +43,7 @@ Location Mode は `src/modes/LocationMode.tsx`、Forecast Mode は `src/modes/Fo
 
 - `AnswerMap` の初期表示はモード別。日本は列島が入る bounds、世界は現行どおり `center=[20,10]`, `zoom=1`。クリックで回答ピン（オレンジ）。
 - 回答後だけ正解ピン（青）と破線。調査ピンはない。
-- 距離は `haversineKm`、スコアは `locationScore`（最大 5000、`e^(-km/1500)`）。減衰 1500km は世界向け。調査回数ボーナスは 0。
-- 日本モード用の減衰を足しても、世界モードは現行の 1500km を残す。
+- 距離は `haversineKm`、スコアは `locationScore`（最大 5000、`e^(-km / D)`）。世界は D=1500、日本は D=800。調査回数ボーナスは 0。
 
 ### Forecast との接点
 
@@ -91,7 +90,7 @@ UI 案（実装時にどちらか）:
 | LM-8 | 日本モード / 世界モードの切替を入れる | LM-3, LM-4 | 完了（[PR #8](https://github.com/70nanon/weather-guesser/pull/8)） |
 | LM-5 | 地図の初期表示をモードに合わせる | LM-8 | 完了（[PR #10](https://github.com/70nanon/weather-guesser/pull/10)） |
 | LM-6 | 調査地点を地図上に出す | なし | 未着手 |
-| LM-7 | 距離スコアをモード別に分ける | LM-8 | 未着手 |
+| LM-7 | 距離スコアをモード別に分ける | LM-8 | 完了（[PR #11](https://github.com/70nanon/weather-guesser/pull/11)） |
 
 推奨の流れ（必須ではない）: LM-1 / LM-2 → LM-3 → LM-4 → LM-8 → LM-5 / LM-6 / LM-7。
 
@@ -345,6 +344,7 @@ Location Mode 内で日本 / 世界を選れるようにする。デフォルト
 
 ## LM-7 距離スコアをモード別に分ける
 
+状態: **完了**（[PR #11](https://github.com/70nanon/weather-guesser/pull/11)）  
 前提: **LM-8**
 
 ### やりたいこと
@@ -383,6 +383,8 @@ Location Mode 内で日本 / 世界を選れるようにする。デフォルト
 最大 5000、調査回数ボーナス 0 は両モード共通。
 `locationScore(distanceKm, investigationsUsed, region)` のように引数を足すか、減衰定数を外から渡す。
 
+実装: 日本は D=800、世界は現行の D=1500。`distanceScore` / `locationScore` に `region` を足し、省略時は世界。Forecast の 100 点スコアは触らない。
+
 ### 対象ファイル
 
 - `src/logic/locationScore.ts`
@@ -418,6 +420,6 @@ Location Mode 内で日本 / 世界を選れるようにする。デフォルト
 | データ | 世界リスト兼検索 | 世界リスト + 日本リスト + 検索カタログ | LM-3（完了 / [PR #6](https://github.com/70nanon/weather-guesser/pull/6)）, LM-4（完了 / [PR #7](https://github.com/70nanon/weather-guesser/pull/7)） |
 | 地図の初期表示 | 常に世界 | モードに合わせる | LM-5（完了 / [PR #10](https://github.com/70nanon/weather-guesser/pull/10)） |
 | 調査地点 | カードのみ | カード + 地図マーカー | LM-6 |
-| 採点 | 減衰 1500km のみ | 日本 / 世界で減衰を分ける | LM-7 |
+| 採点 | 減衰 1500km のみ | 日本 / 世界で減衰を分ける | LM-7（完了 / [PR #11](https://github.com/70nanon/weather-guesser/pull/11)） |
 | 気象表示 | 現行セット | 同じ | — |
 | Forecast | 独立 | 独立 | LM-3（完了 / [PR #6](https://github.com/70nanon/weather-guesser/pull/6)） |
