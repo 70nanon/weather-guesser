@@ -130,7 +130,7 @@ export function LocationMode() {
       target: round.target,
       guess,
       distanceKm,
-      score: locationScore(distanceKm, investigationsUsed),
+      score: locationScore(distanceKm, investigationsUsed, region),
       investigationsUsed,
       region,
     })
