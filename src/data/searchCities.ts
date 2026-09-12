@@ -1,21 +1,13 @@
 import type { TargetCity } from '../types/location'
 import type { GeoLocation } from '../types/weather'
+import { JAPAN_CITIES } from './japanCities'
 import { WORLD_CITIES } from './targetCities'
 
 /**
  * 正解リストに含まれないが、調査・予報の日本語検索で使いたい都市。
- * 世界正解リストとは別に持つ。LM-4 の日本リスト追加後も残してよい。
+ * 県庁所在地は JAPAN_CITIES へ移したので、今は空。拡張用に残す。
  */
-export const SEARCH_ONLY_CITIES: TargetCity[] = [
-  { id: 1001, name: '大阪', country: '日本', latitude: 34.69, longitude: 135.5, aliases: ['osaka', 'おおさか'] },
-  { id: 1002, name: '名古屋', country: '日本', latitude: 35.18, longitude: 136.91, aliases: ['nagoya', 'なごや'] },
-  { id: 1003, name: '福岡', country: '日本', latitude: 33.59, longitude: 130.4, aliases: ['fukuoka', 'ふくおか'] },
-  { id: 1004, name: '京都', country: '日本', latitude: 35.01, longitude: 135.77, aliases: ['kyoto', 'きょうと'] },
-  { id: 1005, name: '横浜', country: '日本', latitude: 35.44, longitude: 139.64, aliases: ['yokohama', 'よこはま'] },
-  { id: 1006, name: '神戸', country: '日本', latitude: 34.69, longitude: 135.2, aliases: ['kobe', 'こうべ'] },
-  { id: 1007, name: '広島', country: '日本', latitude: 34.39, longitude: 132.46, aliases: ['hiroshima', 'ひろしま'] },
-  { id: 1008, name: '仙台', country: '日本', latitude: 38.27, longitude: 140.87, aliases: ['sendai', 'せんだい'] },
-]
+export const SEARCH_ONLY_CITIES: TargetCity[] = []
 
 /** 正解リストの id に依存しない。日本リスト追加後も世界都市の検索が残る。 */
 const SEARCH_ALIASES_BY_NAME: Record<string, string[]> = {
@@ -75,7 +67,7 @@ function normalize(value: string): string {
 export function searchCityCatalog(
   extra: readonly TargetCity[] = [],
 ): TargetCity[] {
-  return [...WORLD_CITIES, ...SEARCH_ONLY_CITIES, ...extra]
+  return [...WORLD_CITIES, ...JAPAN_CITIES, ...SEARCH_ONLY_CITIES, ...extra]
 }
 
 function cityNames(city: TargetCity): string[] {
@@ -114,11 +106,13 @@ export function searchLocalCities(query: string): GeoLocation[] {
   }
 
   ranked.sort((a, b) => a.rank - b.rank || a.city.name.localeCompare(b.city.name, 'ja'))
-  const seen = new Set<number>()
+  const seenIds = new Set<number>()
+  const seenNames = new Set<string>()
   const results: GeoLocation[] = []
   for (const item of ranked) {
-    if (seen.has(item.city.id)) continue
-    seen.add(item.city.id)
+    if (seenIds.has(item.city.id) || seenNames.has(item.city.name)) continue
+    seenIds.add(item.city.id)
+    seenNames.add(item.city.name)
     results.push(toLocation(item.city))
     if (results.length >= 5) break
   }

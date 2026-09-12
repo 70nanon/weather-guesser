@@ -1,4 +1,5 @@
 import type { LocationRoundResult } from '../types/location'
+import { regionLabel } from '../data/locationRegion'
 import { formatDistanceKm } from '../logic/haversine'
 import { MAX_LOCATION_SCORE } from '../logic/locationScore'
 
@@ -32,6 +33,10 @@ export function LocationResultCard({ result, onNext }: Props) {
           </tr>
         </thead>
         <tbody>
+          <tr>
+            <th>出題範囲</th>
+            <td>{regionLabel(result.region)}</td>
+          </tr>
           <tr>
             <th>正解地点</th>
             <td>
