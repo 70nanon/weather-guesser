@@ -19,10 +19,10 @@ Location Mode は `src/modes/LocationMode.tsx`、Forecast Mode は `src/modes/Fo
 
 ### 正解地点
 
-- `src/data/targetCities.ts` の `WORLD_CITIES`（46 都市）から `pickTargetCity(WORLD_CITIES)` で選ぶ。
-- 完全なランダム座標ではない。リストは世界規模で、日本は札幌・東京・那覇の 3 都市だけ。
+- `src/data/targetCities.ts` の `WORLD_CITIES`（46 都市）から `pickTargetCity(WORLD_CITIES)` で選ぶ。切替 UI（LM-8）までは世界のみ。
+- 日本モード用の `JAPAN_CITIES`（47 都道府県庁所在地、id 2001–）は `src/data/japanCities.ts` にある。世界リストは残している。
 - 地点名 / 国 / 座標はプレイヤーに出さない。天気取得失敗時は別候補を最大 3 回試す。
-- `pickTargetCity(cities, excludeId)` は渡された配列から選ぶ。検索カタログは `searchCityCatalog()`（世界リスト + 検索専用都市）。
+- `pickTargetCity(cities, excludeId)` は渡された配列から選ぶ。検索カタログは `searchCityCatalog()`（世界リスト + 日本リスト）。東京など両リストにある名前は検索結果で 1 件にまとめる。
 
 ### 天気表示
 
@@ -34,7 +34,7 @@ Location Mode は `src/modes/LocationMode.tsx`、Forecast Mode は `src/modes/Fo
 
 - 最大 3 回（`MAX_INVESTIGATIONS`）。両モード共通。
 - `InvestigatePanel` で検索し、結果カードは `LocationMode` が縦に積む。
-- 日本語検索は `searchLocalCities()` が `searchCityCatalog()`（世界リスト + 大阪など検索専用都市）を先に照合し、なければ Open-Meteo geocoding。
+- 日本語検索は `searchLocalCities()` が `searchCityCatalog()`（世界リスト + 日本の県庁所在地）を先に照合し、なければ Open-Meteo geocoding。
 - ローマ字エイリアスは都市名キーで検索側にあり、正解リストの id には依存しない。
 - 調査地点は地図に出ていない。
 - 調査の検索候補は左側が地点名、右側が「調査する」。`GeoLocation.country` はあるが候補行では出していない。Forecast の `LocationSearch` は国名を出している。
@@ -88,7 +88,7 @@ UI 案（実装時にどちらか）:
 | LM-1 | 調査候補を「地点名 / 国名」表示にする | なし | 完了（[PR #4](https://github.com/70nanon/weather-guesser/pull/4)） |
 | LM-2 | 問題と調査結果を折りたたみまたはタブで切り替える | なし | 完了（[PR #5](https://github.com/70nanon/weather-guesser/pull/5)） |
 | LM-3 | 正解リストと検索カタログを分離し、世界リストを残す | なし | 完了（[PR #6](https://github.com/70nanon/weather-guesser/pull/6)） |
-| LM-4 | 日本国内リストを追加する | LM-3 | 未着手 |
+| LM-4 | 日本国内リストを追加する | LM-3 | 完了（[PR #7](https://github.com/70nanon/weather-guesser/pull/7)） |
 | LM-8 | 日本モード / 世界モードの切替を入れる | LM-3, LM-4 | 未着手 |
 | LM-5 | 地図の初期表示をモードに合わせる | LM-8 | 未着手 |
 | LM-6 | 調査地点を地図上に出す | なし | 未着手 |
@@ -211,6 +211,7 @@ Location の正解配列と、両モード共通の検索カタログを別に�
 
 ## LM-4 日本国内リストを追加する
 
+状態: **完了**（[PR #7](https://github.com/70nanon/weather-guesser/pull/7)）  
 前提: **LM-3**
 
 ### やりたいこと
@@ -226,7 +227,10 @@ Location の正解配列と、両モード共通の検索カタログを別に�
 - 「安定」= よく知られた都市の固定座標。気象庁コードは持たない。
 - データ形式は現行の `TargetCity`。置き場所は `src/data/targetCities.ts` か、同ディレクトリの分割ファイル。
 
+実装: `src/data/japanCities.ts` に `JAPAN_CITIES`（47 県庁所在地、id 2001–）。`SEARCH_ONLY_CITIES` の大阪などは日本リストへ移し、検索カタログは世界 + 日本。東京など両リストにある名前は検索結果で 1 件。出題はまだ世界のみ。
+
 ### 対象ファイル
+
 
 - `src/data/targetCities.ts`（または `japanCities.ts`）
 - `src/data/targetCities.test.ts`
@@ -406,7 +410,7 @@ Location Mode 内で日本 / 世界を選れるようにする。デフォルト
 | 場所のモード | 世界のみ | 日本（標準）と世界（高難易度） | LM-8 |
 | 調査候補 | 地点名 +「調査する」 | `地点名 / 国名` | LM-1（完了 / [PR #4](https://github.com/70nanon/weather-guesser/pull/4)） |
 | 問題と調査の比較 | 縦積み | タブまたは折りたたみ | LM-2（完了 / [PR #5](https://github.com/70nanon/weather-guesser/pull/5)） |
-| データ | 世界リスト兼検索 | 世界リスト + 日本リスト + 検索カタログ | LM-3（完了 / [PR #6](https://github.com/70nanon/weather-guesser/pull/6)）, LM-4 |
+| データ | 世界リスト兼検索 | 世界リスト + 日本リスト + 検索カタログ | LM-3（完了 / [PR #6](https://github.com/70nanon/weather-guesser/pull/6)）, LM-4（完了 / [PR #7](https://github.com/70nanon/weather-guesser/pull/7)） |
 | 地図の初期表示 | 常に世界 | モードに合わせる | LM-5 |
 | 調査地点 | カードのみ | カード + 地図マーカー | LM-6 |
 | 採点 | 減衰 1500km のみ | 日本 / 世界で減衰を分ける | LM-7 |
