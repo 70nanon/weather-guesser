@@ -90,7 +90,7 @@ UI 案（実装時にどちらか）:
 | LM-8 | 日本モード / 世界モードの切替を入れる | LM-3, LM-4 | 完了（[PR #8](https://github.com/70nanon/weather-guesser/pull/8)） |
 | LM-5 | 地図の初期表示をモードに合わせる | LM-8 | 完了（[PR #10](https://github.com/70nanon/weather-guesser/pull/10)） |
 | LM-6 | 調査地点を地図上に出す | なし | 未着手 |
-| LM-7 | 距離スコアをモード別に分ける | LM-8 | 完了 |
+| LM-7 | 距離スコアをモード別に分ける | LM-8 | 完了（[PR #11](https://github.com/70nanon/weather-guesser/pull/11)） |
 
 推奨の流れ（必須ではない）: LM-1 / LM-2 → LM-3 → LM-4 → LM-8 → LM-5 / LM-6 / LM-7。
 
@@ -344,7 +344,7 @@ Location Mode 内で日本 / 世界を選れるようにする。デフォルト
 
 ## LM-7 距離スコアをモード別に分ける
 
-状態: **完了**  
+状態: **完了**（[PR #11](https://github.com/70nanon/weather-guesser/pull/11)）  
 前提: **LM-8**
 
 ### やりたいこと
@@ -420,6 +420,6 @@ Location Mode 内で日本 / 世界を選れるようにする。デフォルト
 | データ | 世界リスト兼検索 | 世界リスト + 日本リスト + 検索カタログ | LM-3（完了 / [PR #6](https://github.com/70nanon/weather-guesser/pull/6)）, LM-4（完了 / [PR #7](https://github.com/70nanon/weather-guesser/pull/7)） |
 | 地図の初期表示 | 常に世界 | モードに合わせる | LM-5（完了 / [PR #10](https://github.com/70nanon/weather-guesser/pull/10)） |
 | 調査地点 | カードのみ | カード + 地図マーカー | LM-6 |
-| 採点 | 減衰 1500km のみ | 日本 / 世界で減衰を分ける | LM-7（完了） |
+| 採点 | 減衰 1500km のみ | 日本 / 世界で減衰を分ける | LM-7（完了 / [PR #11](https://github.com/70nanon/weather-guesser/pull/11)） |
 | 気象表示 | 現行セット | 同じ | — |
 | Forecast | 独立 | 独立 | LM-3（完了 / [PR #6](https://github.com/70nanon/weather-guesser/pull/6)） |
