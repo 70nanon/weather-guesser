@@ -183,6 +183,7 @@ export function LocationMode() {
             view={mapViewForRegion(region)}
             guess={guess}
             target={answered ? round.target : null}
+            investigations={investigations}
             disabled={answered}
             onPick={(point) => {
               setGuess(point)
