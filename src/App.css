@@ -562,9 +562,30 @@
   box-shadow: 0 0 0 2px #fb8500;
 }
 
+.map-legend__item--investigate::before {
+  background: #9b7eed;
+  box-shadow: 0 0 0 2px #5c3dc7;
+}
+
 .map-legend__item--target::before {
   background: #219ebc;
   box-shadow: 0 0 0 2px #126782;
+}
+
+.investigate-pin.leaflet-div-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #9b7eed;
+  border: 2px solid #5c3dc7;
+  border-radius: 50%;
+}
+
+.investigate-pin__num {
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1;
 }
 
 .app--location .absurd-big__value {

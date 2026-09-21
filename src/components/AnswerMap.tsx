@@ -1,19 +1,25 @@
 import { useCallback, useEffect } from 'react'
+import { DomEvent, divIcon } from 'leaflet'
+import type { LeafletMouseEvent } from 'leaflet'
 import {
   CircleMarker,
   MapContainer,
+  Marker,
   Polyline,
   TileLayer,
+  Tooltip,
   useMap,
   useMapEvents,
 } from 'react-leaflet'
-import type { LatLng } from '../types/location'
+import type { Investigation, LatLng } from '../types/location'
 import type { MapView } from '../data/mapView'
+import { investigationPinLabel } from '../logic/investigationPin'
 import 'leaflet/dist/leaflet.css'
 
 interface Props {
   guess: LatLng | null
   target?: LatLng | null
+  investigations?: readonly Investigation[]
   disabled: boolean
   onPick: (point: LatLng) => void
   view: MapView
@@ -55,8 +61,30 @@ function FitGuessAndTarget({ guess, target }: { guess: LatLng; target: LatLng })
   return null
 }
 
-export function AnswerMap({ guess, target, disabled, onPick, view }: Props) {
+function investigationIcon(index: number) {
+  return divIcon({
+    className: 'investigate-pin',
+    html: `<span class="investigate-pin__num">${index + 1}</span>`,
+    iconSize: [22, 22],
+    iconAnchor: [11, 11],
+  })
+}
+
+function stopPinClick(e: LeafletMouseEvent) {
+  DomEvent.stopPropagation(e.originalEvent)
+  e.originalEvent.stopPropagation()
+}
+
+export function AnswerMap({
+  guess,
+  target,
+  investigations = [],
+  disabled,
+  onPick,
+  view,
+}: Props) {
   const showTarget = target != null
+  const pins = investigations.slice(0, 3)
 
   return (
     <div className="answer-map-wrap">
@@ -77,6 +105,19 @@ export function AnswerMap({ guess, target, disabled, onPick, view }: Props) {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         <ClickCatcher disabled={disabled} onPick={onPick} />
+        {pins.map((item, index) => (
+          <Marker
+            key={`${item.location.id}-${index}`}
+            position={[item.location.latitude, item.location.longitude]}
+            icon={investigationIcon(index)}
+            zIndexOffset={200}
+            eventHandlers={{ click: stopPinClick }}
+          >
+            <Tooltip direction="top" offset={[0, -12]} opacity={0.95}>
+              {investigationPinLabel(index, item.location.name)}
+            </Tooltip>
+          </Marker>
+        ))}
         {guess && (
           <CircleMarker
             center={[guess.latitude, guess.longitude]}
@@ -115,6 +156,9 @@ export function AnswerMap({ guess, target, disabled, onPick, view }: Props) {
         )}
       </MapContainer>
       <div className="map-legend">
+        {pins.length > 0 && (
+          <span className="map-legend__item map-legend__item--investigate">調査地点</span>
+        )}
         <span className="map-legend__item map-legend__item--guess">あなたのピン</span>
         {showTarget && (
           <span className="map-legend__item map-legend__item--target">正解地点</span>

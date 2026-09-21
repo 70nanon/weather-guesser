@@ -42,7 +42,7 @@ Location Mode は `src/modes/LocationMode.tsx`、Forecast Mode は `src/modes/Fo
 ### 回答・採点
 
 - `AnswerMap` の初期表示はモード別。日本は列島が入る bounds、世界は現行どおり `center=[20,10]`, `zoom=1`。クリックで回答ピン（オレンジ）。
-- 回答後だけ正解ピン（青）と破線。調査ピンはない。
+- 回答後だけ正解ピン（青）と破線。調査した地点は番号付きピンで地図に残る。距離や方向は出さない。
 - 距離は `haversineKm`、スコアは `locationScore`（最大 5000、`e^(-km / D)`）。世界は D=1500、日本は D=800。調査回数ボーナスは 0。
 
 ### Forecast との接点
@@ -89,7 +89,7 @@ UI 案（実装時にどちらか）:
 | LM-4 | 日本国内リストを追加する | LM-3 | 完了（[PR #7](https://github.com/70nanon/weather-guesser/pull/7)） |
 | LM-8 | 日本モード / 世界モードの切替を入れる | LM-3, LM-4 | 完了（[PR #8](https://github.com/70nanon/weather-guesser/pull/8)） |
 | LM-5 | 地図の初期表示をモードに合わせる | LM-8 | 完了（[PR #10](https://github.com/70nanon/weather-guesser/pull/10)） |
-| LM-6 | 調査地点を地図上に出す | なし | 未着手 |
+| LM-6 | 調査地点を地図上に出す | なし | 完了（[PR #12](https://github.com/70nanon/weather-guesser/pull/12)） |
 | LM-7 | 距離スコアをモード別に分ける | LM-8 | 完了（[PR #11](https://github.com/70nanon/weather-guesser/pull/11)） |
 
 推奨の流れ（必須ではない）: LM-1 / LM-2 → LM-3 → LM-4 → LM-8 → LM-5 / LM-6 / LM-7。
@@ -313,6 +313,7 @@ Location Mode 内で日本 / 世界を選れるようにする。デフォルト
 
 ## LM-6 調査地点を地図上に出す
 
+状態: **完了**（[PR #12](https://github.com/70nanon/weather-guesser/pull/12)）  
 前提: なし。地図がモード別になったあとの方が自然なので、**LM-5 のあとがおすすめ。** どちらのモードでも同じ実装でよい。
 
 ### やりたいこと
@@ -327,6 +328,8 @@ Location Mode 内で日本 / 世界を選れるようにする。デフォルト
 - 調査ピンの click は `stopPropagation`。
 - ツールチップは地点名と調査番号まで。距離は書かない。
 - 調査のたびに地図を正解へ寄せない。
+
+実装: `AnswerMap` に `investigations` を渡す。番号付きの紫ピン（調査1〜3）。ツールチップは地点名と番号のみ。クリックは地図への伝播を止める。正解への線は引かない。fitBounds は回答後の回答ピンと正解ピンだけ。
 
 ### 対象ファイル
 
@@ -419,7 +422,7 @@ Location Mode 内で日本 / 世界を選れるようにする。デフォルト
 | 問題と調査の比較 | 縦積み | タブまたは折りたたみ | LM-2（完了 / [PR #5](https://github.com/70nanon/weather-guesser/pull/5)） |
 | データ | 世界リスト兼検索 | 世界リスト + 日本リスト + 検索カタログ | LM-3（完了 / [PR #6](https://github.com/70nanon/weather-guesser/pull/6)）, LM-4（完了 / [PR #7](https://github.com/70nanon/weather-guesser/pull/7)） |
 | 地図の初期表示 | 常に世界 | モードに合わせる | LM-5（完了 / [PR #10](https://github.com/70nanon/weather-guesser/pull/10)） |
-| 調査地点 | カードのみ | カード + 地図マーカー | LM-6 |
+| 調査地点 | カードのみ | カード + 地図マーカー | LM-6（完了 / [PR #12](https://github.com/70nanon/weather-guesser/pull/12)） |
 | 採点 | 減衰 1500km のみ | 日本 / 世界で減衰を分ける | LM-7（完了 / [PR #11](https://github.com/70nanon/weather-guesser/pull/11)） |
 | 気象表示 | 現行セット | 同じ | — |
 | Forecast | 独立 | 独立 | LM-3（完了 / [PR #6](https://github.com/70nanon/weather-guesser/pull/6)） |
